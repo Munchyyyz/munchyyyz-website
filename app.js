@@ -9,10 +9,10 @@ const products = [
     },
     {
         id: 2,
-        name: "Beaded Heart Bracelet",
-        price: 349,
-        description: "Handcrafted delicate glass bead bracelet with a gold-plated heart charm.",
-        image: "./images/bracelet1.png"
+        name: "Product yet to come",
+        price: null,
+        description: "null",
+        image: "null"
     },
     {
         id: 3,
@@ -115,3 +115,74 @@ cartOverlay.addEventListener("click", closeCart);
 
 // --- Initial Load ---
 renderProducts();
+
+// ==========================================
+// --- 7. WHATSAPP CHECKOUT LOGIC ---
+// ==========================================
+
+const checkoutBtn = document.getElementById("checkout-btn");
+const checkoutModal = document.getElementById("checkout-modal");
+const closeCheckoutBtn = document.getElementById("close-checkout");
+const waForm = document.getElementById("whatsapp-checkout-form");
+
+// Your US WhatsApp Number (+1 402-415-3307)
+const whatsappNumber = "14024153307"; 
+
+// Open Delivery Modal when Proceed to Checkout is clicked
+if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", () => {
+        if (cart.length === 0) {
+            alert("Your cart is currently empty!");
+            return;
+        }
+        // Close the side cart drawer first
+        closeCart();
+        // Open the WhatsApp details modal
+        checkoutModal.style.display = "block";
+    });
+}
+
+// Close WhatsApp Modal
+if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener("click", () => {
+        checkoutModal.style.display = "none";
+    });
+}
+
+// Handle Form Submission & Send to WhatsApp
+if (waForm) {
+    waForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("cust-name").value;
+        const address = document.getElementById("cust-address").value;
+
+        let message = `🛍️ *NEW ORDER - MUNCHYYYZ*\n`;
+        message += `----------------------------\n`;
+        message += `👤 *Customer Name:* ${name}\n`;
+        message += `📍 *Delivery Address:* ${address}\n`;
+        message += `----------------------------\n`;
+        message += `📦 *Order Details:*\n`;
+
+        let total = 0;
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            message += `• ${item.name} (x${item.quantity}) - ₹${itemTotal}\n`;
+        });
+
+        message += `----------------------------\n`;
+        message += `💰 *Total Amount:* ₹${total}\n\n`;
+        message += `Hi! Please confirm my order.`;
+
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(message);
+        const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+        // Open WhatsApp in new tab
+        window.open(waUrl, "_blank");
+
+        // Close modal
+        checkoutModal.style.display = "none";
+    });
+}
