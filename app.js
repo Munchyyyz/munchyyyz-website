@@ -1,5 +1,14 @@
 // ==========================================
-// --- 1. PRODUCT DATA ---
+// --- 1. CONFIGURATION & STATE ---
+// ==========================================
+const whatsappNumber = "14024153307"; // Replace with your WhatsApp Number (with country code, no +)
+const DELIVERY_FEE = 50; // Delivery charge in INR
+
+let cart = JSON.parse(localStorage.getItem("munchyyyz_cart")) || [];
+let currentCategory = "all";
+
+// ==========================================
+// --- 2. PRODUCT DATA ---
 // ==========================================
 const products = [
     {
@@ -45,100 +54,22 @@ const products = [
 ];
 
 // ==========================================
-// --- 2. STATE & GLOBALS ---
+// --- 3. DOM ELEMENTS ---
 // ==========================================
-let cart = [];
-let currentCategory = "all";
-const whatsappNumber = "14024153307"; 
+const productGrid = document.getElementById("product-grid");
+const cartToggle = document.getElementById("cart-toggle");
+const cartModal = document.getElementById("cart-modal");
+const cartOverlay = document.getElementById("cart-overlay");
+const closeCart = document.getElementById("close-cart");
+const cartItemsContainer = document.getElementById("cart-items");
+const cartCount = document.getElementById("cart-count");
+const cartTotal = document.getElementById("cart-total");
+const checkoutBtn = document.getElementById("checkout-btn");
 
-// DOM Elements
-let productGrid, cartToggle, closeCartBtn, cartOverlay, cartModal, cartItemsContainer, cartCountEl, cartTotalEl;
-let checkoutBtn, checkoutModal, closeCheckoutBtn, waForm, floatingWaBtn, filterButtons;
-
-// ==========================================
-// --- 3. CORE CART FUNCTIONS ---
-// ==========================================
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product || product.price === null) return;
-
-    const existingItem = cart.find(item => item.id === productId);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-
-    updateCartUI();
-    openCart();
-}
-
-function changeQuantity(productId, delta) {
-    const itemIndex = cart.findIndex(item => item.id === productId);
-
-    if (itemIndex > -1) {
-        cart[itemIndex].quantity += delta;
-
-        if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1);
-        }
-    }
-
-    updateCartUI();
-}
-
-function removeItem(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    updateCartUI();
-}
-
-function updateCartUI() {
-    // Total Items Count
-    const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    if (cartCountEl) {
-        cartCountEl.innerText = totalCount;
-        
-        // Trigger Pop Animation
-        cartCountEl.classList.remove("cart-pop-animation");
-        void cartCountEl.offsetWidth; // Force reflow
-        cartCountEl.classList.add("cart-pop-animation");
-    }
-
-    // Total Cost
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    if (cartTotalEl) cartTotalEl.innerText = `₹${totalPrice}`;
-
-    // Render Cart Items List
-    if (!cartItemsContainer) return;
-
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p class="empty-msg" style="text-align: center; color: var(--text-muted); margin-top: 2rem;">Your cart is currently empty.</p>`;
-    } else {
-        cartItemsContainer.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <div class="cart-item-info">
-                    <strong>${item.name}</strong>
-                    <div style="font-size: 0.85rem; color: var(--accent-gold); font-weight: 600; margin-top: 2px;">
-                        ₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}
-                    </div>
-                </div>
-                <div class="cart-item-controls">
-                    <button class="qty-btn" data-action="decrease" data-id="${item.id}">-</button>
-                    <span class="qty-count">${item.quantity}</span>
-                    <button class="qty-btn" data-action="increase" data-id="${item.id}">+</button>
-                    <button class="remove-btn" data-action="remove" data-id="${item.id}">&times;</button>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
-// EXPOSE TO WINDOW IMMEDIATELY
-window.addToCart = addToCart;
-window.changeQuantity = changeQuantity;
-window.removeItem = removeItem;
+const checkoutModal = document.getElementById("checkout-modal");
+const closeCheckout = document.getElementById("close-checkout");
+const waForm = document.getElementById("whatsapp-checkout-form");
+const floatingWaBtn = document.getElementById("floating-wa-btn");
 
 // ==========================================
 // --- 4. RENDER PRODUCTS WITH FILTER ---
@@ -151,12 +82,12 @@ function renderProducts() {
         : products.filter(p => p.category === currentCategory);
 
     if (filteredProducts.length === 0) {
-        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No products found in this category yet!</p>`;
+        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888; padding: 2rem;">No products found in this category yet!</p>`;
         return;
     }
 
     productGrid.innerHTML = filteredProducts.map(product => {
-        // COMING SOON / PLACEHOLDER CARD
+        // PLACEHOLDER CARD (Upcoming products)
         if (product.price === null || product.price === undefined) {
             return `
                 <div class="product-card placeholder-card">
@@ -164,7 +95,7 @@ function renderProducts() {
                     <h3>${product.name || "Product yet to come"}</h3>
                     <p>Stay tuned for our next launch!</p>
                     <div class="price-row">
-                        <span class="price" style="color: var(--text-muted); font-size: 0.95rem;">TBA</span>
+                        <span class="price" style="color: #888; font-size: 0.95rem;">TBA</span>
                         <button class="add-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>
                     </div>
                 </div>
@@ -187,123 +118,229 @@ function renderProducts() {
         `;
     }).join('');
 }
+
 // ==========================================
-// --- 5. MODAL & EVENT CONTROLS ---
+// --- 5. CART SYSTEM LOGIC ---
 // ==========================================
+function saveCart() {
+    localStorage.setItem("munchyyyz_cart", JSON.stringify(cart));
+}
+
+function updateCartUI() {
+    const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    if (cartCount) cartCount.textContent = totalCount;
+    if (cartTotal) cartTotal.textContent = `₹${totalPrice}`;
+
+    if (!cartItemsContainer) return;
+
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `<p class="empty-msg">Your cart is currently empty.</p>`;
+        if (checkoutBtn) checkoutBtn.disabled = true;
+        return;
+    }
+
+    if (checkoutBtn) checkoutBtn.disabled = false;
+
+    cartItemsContainer.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-details">
+                <h4>${item.name}</h4>
+                <p>₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}</p>
+            </div>
+            <div class="cart-item-actions">
+                <button onclick="changeQuantity(${item.id}, -1)">-</button>
+                <span>${item.quantity}</span>
+                <button onclick="changeQuantity(${item.id}, 1)">+</button>
+                <button class="remove-btn" onclick="removeFromCart(${item.id})">&times;</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product || product.price === null) return;
+
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+
+    saveCart();
+    updateCartUI();
+    openCart();
+}
+
+function changeQuantity(productId, delta) {
+    const item = cart.find(i => i.id === productId);
+    if (!item) return;
+
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+        removeFromCart(productId);
+    } else {
+        saveCart();
+        updateCartUI();
+    }
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    updateCartUI();
+}
+
 function openCart() {
-    if (cartModal && cartOverlay) {
-        cartModal.classList.add("open");
-        cartOverlay.classList.add("open");
-    }
+    if (cartModal) cartModal.classList.add("active");
+    if (cartOverlay) cartOverlay.classList.add("active");
 }
 
-function closeCart() {
-    if (cartModal && cartOverlay) {
-        cartModal.classList.remove("open");
-        cartOverlay.classList.remove("open");
-    }
+function closeCartModal() {
+    if (cartModal) cartModal.classList.remove("active");
+    if (cartOverlay) cartOverlay.classList.remove("active");
 }
 
-function initDOMElements() {
-    productGrid = document.getElementById("product-grid");
-    cartToggle = document.getElementById("cart-toggle");
-    closeCartBtn = document.getElementById("close-cart");
-    cartOverlay = document.getElementById("cart-overlay");
-    cartModal = document.getElementById("cart-modal");
-    cartItemsContainer = document.getElementById("cart-items");
-    cartCountEl = document.getElementById("cart-count");
-    cartTotalEl = document.getElementById("cart-total");
+// ==========================================
+// --- 6. CHECKOUT & PRICING CALCULATIONS ---
+// ==========================================
+function updateModalTotals() {
+    const orderTypeSelect = document.getElementById("order-type");
+    const orderType = orderTypeSelect ? orderTypeSelect.value : "Delivery";
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryFee = (orderType === "Delivery") ? DELIVERY_FEE : 0;
+    const grandTotal = subtotal + deliveryFee;
 
-    checkoutBtn = document.getElementById("checkout-btn");
-    checkoutModal = document.getElementById("checkout-modal");
-    closeCheckoutBtn = document.getElementById("close-checkout");
-    waForm = document.getElementById("whatsapp-checkout-form");
-    floatingWaBtn = document.getElementById("floating-wa-btn");
-    filterButtons = document.querySelectorAll(".filter-btn");
+    const subtotalElem = document.getElementById("summary-subtotal");
+    const deliveryChargeElem = document.getElementById("summary-delivery-charge");
+    const grandTotalElem = document.getElementById("summary-grand-total");
+
+    if (subtotalElem) subtotalElem.textContent = `₹${subtotal}`;
+    if (deliveryChargeElem) {
+        deliveryChargeElem.textContent = deliveryFee > 0 ? `+ ₹${deliveryFee}` : "FREE";
+    }
+    if (grandTotalElem) grandTotalElem.textContent = `₹${grandTotal}`;
 }
 
-function setupEventListeners() {
-    // Category Filter Buttons
-    if (filterButtons) {
-        filterButtons.forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                filterButtons.forEach(b => b.classList.remove("active"));
-                e.target.classList.add("active");
-                
-                currentCategory = e.target.getAttribute("data-category");
-                renderProducts();
-            });
-        });
-    }
+function openCheckout() {
+    if (cart.length === 0) return;
+    closeCartModal();
+    updateModalTotals();
+    if (checkoutModal) checkoutModal.style.display = "flex";
+}
 
-    // Cart drawer controls
+// ==========================================
+// --- 7. EVENT LISTENERS ---
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    renderProducts();
+    updateCartUI();
+
+    // Cart Sidebar Toggle
     if (cartToggle) cartToggle.addEventListener("click", openCart);
-    if (closeCartBtn) closeCartBtn.addEventListener("click", closeCart);
-    if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
+    if (closeCart) closeCart.addEventListener("click", closeCartModal);
+    if (cartOverlay) cartOverlay.addEventListener("click", closeCartModal);
+    if (checkoutBtn) checkoutBtn.addEventListener("click", openCheckout);
 
-    // Cart Quantity Controls
-    if (cartItemsContainer) {
-        cartItemsContainer.addEventListener("click", (e) => {
-            const target = e.target;
-            const id = parseInt(target.getAttribute("data-id"));
-            const action = target.getAttribute("data-action");
-
-            if (!id || !action) return;
-
-            if (action === "increase") changeQuantity(id, 1);
-            else if (action === "decrease") changeQuantity(id, -1);
-            else if (action === "remove") removeItem(id);
-        });
-    }
-
-    // Checkout Modal
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener("click", () => {
-            if (cart.length === 0) {
-                alert("Your cart is currently empty!");
-                return;
-            }
-            closeCart();
-            if (checkoutModal) checkoutModal.style.display = "block";
-        });
-    }
-
-    if (closeCheckoutBtn) {
-        closeCheckoutBtn.addEventListener("click", () => {
+    // Checkout Modal Close
+    if (closeCheckout) {
+        closeCheckout.addEventListener("click", () => {
             if (checkoutModal) checkoutModal.style.display = "none";
         });
     }
 
-    window.addEventListener("click", (event) => {
-        if (event.target === checkoutModal) {
-            checkoutModal.style.display = "none";
-        }
+    // Category Filter Buttons
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            filterButtons.forEach(b => b.classList.remove("active"));
+            e.target.classList.add("active");
+            currentCategory = e.target.getAttribute("data-category");
+            renderProducts();
+        });
     });
 
-    // WhatsApp Form Submit
+    // Dynamic Delivery vs Pickup Toggle
+    const orderTypeSelect = document.getElementById("order-type");
+    const addressSection = document.getElementById("address-section");
+    const addressInputs = document.querySelectorAll(".addr-field");
+
+    if (orderTypeSelect) {
+        orderTypeSelect.addEventListener("change", (e) => {
+            const isDelivery = e.target.value === "Delivery";
+
+            if (addressSection) {
+                addressSection.style.display = isDelivery ? "block" : "none";
+            }
+
+            addressInputs.forEach(input => {
+                if (isDelivery) {
+                    input.setAttribute("required", "true");
+                } else {
+                    input.removeAttribute("required");
+                }
+            });
+
+            updateModalTotals();
+        });
+    }
+
+    // WhatsApp Form Submission
     if (waForm) {
         waForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
             const name = document.getElementById("cust-name").value;
-            const address = document.getElementById("cust-address").value;
+            const phone = document.getElementById("cust-phone").value;
+            const orderType = document.getElementById("order-type").value;
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = (orderType === "Delivery") ? DELIVERY_FEE : 0;
+            const grandTotal = subtotal + deliveryFee;
 
             let message = `🛍️ *NEW ORDER - MUNCHYYYZ*\n`;
             message += `----------------------------\n`;
             message += `👤 *Customer Name:* ${name}\n`;
-            message += `📍 *Delivery Address:* ${address}\n`;
-            message += `----------------------------\n`;
-            message += `📦 *Order Details:*\n`;
+            message += `📞 *Phone:* ${phone}\n`;
+            message += `🚚 *Order Type:* ${orderType}\n`;
 
-            let total = 0;
+            if (orderType === "Delivery") {
+                const flat = document.getElementById("addr-flat").value;
+                const floor = document.getElementById("addr-floor").value;
+                const street = document.getElementById("addr-street").value;
+                const landmark = document.getElementById("addr-landmark").value;
+                const city = document.getElementById("addr-city").value;
+                const pincode = document.getElementById("addr-pincode").value;
+
+                message += `\n📍 *DELIVERY ADDRESS:*\n`;
+                message += `• Flat/Bldg: ${flat}\n`;
+                message += `• Floor: ${floor}\n`;
+                message += `• Street/Area: ${street}\n`;
+                if (landmark.trim() !== "") {
+                    message += `• Landmark: ${landmark}\n`;
+                }
+                message += `• City & Pincode: ${city} - ${pincode}\n`;
+            } else {
+                message += `📍 *Option:* Self Pickup requested\n`;
+            }
+
+            message += `----------------------------\n`;
+            message += `📦 *ORDER ITEMS:*\n`;
+
             cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-                message += `• ${item.name} (x${item.quantity}) - ₹${itemTotal}\n`;
+                message += `• ${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}\n`;
             });
 
             message += `----------------------------\n`;
-            message += `💰 *Total Amount:* ₹${total}\n\n`;
+            message += `💵 *Subtotal:* ₹${subtotal}\n`;
+            if (orderType === "Delivery") {
+                message += `🚚 *Delivery Fee:* ₹${deliveryFee}\n`;
+            }
+            message += `💰 *FINAL AMOUNT:* ₹${grandTotal}\n\n`;
             message += `Hi! Please confirm my order.`;
 
             const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -315,25 +352,7 @@ function setupEventListeners() {
 
     // Floating Support Button
     if (floatingWaBtn) {
-        floatingWaBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const supportMsg = "Hello, I am reaching out to you regarding Munchyyyz items!";
-            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(supportMsg)}`, "_blank");
-        });
+        floatingWaBtn.setAttribute("href", `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi MUNCHYYYZ! I have a question about your collection.")}`);
+        floatingWaBtn.setAttribute("target", "_blank");
     }
-}
-
-// ==========================================
-// --- 6. INITIALIZATION ---
-// ==========================================
-function init() {
-    initDOMElements();
-    renderProducts();
-    setupEventListeners();
-}
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-} else {
-    init();
-}
+});
