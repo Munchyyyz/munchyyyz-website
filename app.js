@@ -87,45 +87,21 @@ function renderProducts() {
 // ==========================================
 // --- 5. CART ACTIONS & UI UPDATES ---
 // ==========================================
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product || product.price === null) return;
-
-    const existingItem = cart.find(item => item.id === productId);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-
-    updateCartUI();
-    openCart();
-}
-
-function changeQuantity(productId, delta) {
-    const itemIndex = cart.findIndex(item => item.id === productId);
-
-    if (itemIndex > -1) {
-        cart[itemIndex].quantity += delta;
-
-        if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1);
-        }
-    }
-
-    updateCartUI();
-}
-
-function removeItem(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    updateCartUI();
-}
-
 function updateCartUI() {
     // Total Items Count
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    if (cartCountEl) cartCountEl.innerText = totalCount;
+    
+    if (cartCountEl) {
+        // Only trigger animation if items are added/changed
+        if (cartCountEl.innerText !== String(totalCount)) {
+            cartCountEl.innerText = totalCount;
+            
+            // Trigger Pop Animation
+            cartCountEl.classList.remove("cart-pop-animation");
+            void cartCountEl.offsetWidth; // Force DOM reflow to restart animation
+            cartCountEl.classList.add("cart-pop-animation");
+        }
+    }
 
     // Total Cost
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -155,11 +131,6 @@ function updateCartUI() {
         `).join('');
     }
 }
-
-// Expose core functions globally for inline handlers
-window.addToCart = addToCart;
-window.changeQuantity = changeQuantity;
-window.removeItem = removeItem;
 
 // ==========================================
 // --- 6. MODAL & EVENT CONTROLS ---
