@@ -235,7 +235,7 @@ nav a:hover {
     color: #FFFFFF;
 }
 
-/* --- Shopping Cart Modal --- */
+/* --- Shopping Cart Sidebar Drawer --- */
 .cart-overlay {
     position: fixed;
     top: 0;
@@ -328,64 +328,111 @@ nav a:hover {
     background: var(--accent-gold-hover);
     box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
 }
-// --- INSTAGRAM CHECKOUT MODAL LOGIC ---
-const checkoutBtn = document.getElementById("checkout-btn");
-const checkoutModal = document.getElementById("checkout-modal");
-const closeCheckoutBtn = document.getElementById("close-checkout");
-const orderSummaryText = document.getElementById("order-summary-text");
-const copyOrderBtn = document.getElementById("copy-order-btn");
 
-// Helper to build the text summary of what's in the cart
-function generateOrderSummary() {
-    if (typeof cart === "undefined" || cart.length === 0) return "";
-
-    let summary = "🛍️ NEW ORDER REQUEST\n-------------------\n";
-    let total = 0;
-
-    cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        summary += `• ${item.name} (x${item.quantity}) - $${itemTotal}\n`;
-    });
-
-    summary += `-------------------\nTotal: $${total}\n\nHi Munchyyyz! I'd like to place this order.`;
-    return summary;
+/* --- WHATSAPP DELIVERY DETAILS POPUP MODAL --- */
+.modal {
+    display: none; /* Controlled via JS: checkoutModal.style.display = "block" */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 42, 41, 0.6);
+    backdrop-filter: blur(5px);
 }
 
-// Open modal when Checkout is clicked
-if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", () => {
-        if (typeof cart !== "undefined" && cart.length === 0) {
-            alert("Your cart is currently empty!");
-            return;
-        }
-        orderSummaryText.value = generateOrderSummary();
-        checkoutModal.style.display = "block";
-    });
+.modal-content {
+    background-color: var(--bg-card);
+    margin: 10% auto;
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 440px;
+    position: relative;
+    text-align: left;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
 }
 
-// Close modal when 'X' is clicked
-if (closeCheckoutBtn) {
-    closeCheckoutBtn.addEventListener("click", () => {
-        checkoutModal.style.display = "none";
-    });
+.modal-content h2 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
 }
 
-// Close modal when clicking outside the box
-window.addEventListener("click", (event) => {
-    if (event.target === checkoutModal) {
-        checkoutModal.style.display = "none";
-    }
-});
+.modal-content p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
 
-// Copy Order Details to Clipboard
-if (copyOrderBtn) {
-    copyOrderBtn.addEventListener("click", () => {
-        orderSummaryText.select();
-        navigator.clipboard.writeText(orderSummaryText.value);
-        copyOrderBtn.innerText = "✅ Copied! Now click below to DM us";
-        setTimeout(() => {
-            copyOrderBtn.innerText = "📋 Copy Order Summary";
-        }, 3000);
-    });
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-dark);
+}
+
+.form-group input, 
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.95rem;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+    border-color: var(--accent-gold);
+}
+
+.wa-btn {
+    width: 100%;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    margin-top: 0.5rem;
+}
+
+.wa-btn:hover {
+    background-color: #1eb857;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
 }
