@@ -1,5 +1,5 @@
 // ==========================================
-// --- 1. PRODUCT DATA WITH CATEGORIES ---
+// --- 1. PRODUCT DATA ---
 // ==========================================
 const products = [
     {
@@ -12,33 +12,33 @@ const products = [
     },
     {
         id: 2,
-        name: "Elegant Pearl Bracelet",
+        name: "Product yet to come",
         category: "bracelets",
-        price: null, // Coming soon
+        price: null,
         description: null,
         image: null
     },
     {
         id: 3,
-        name: "Minimalist Gold Necklace",
+        name: "Product yet to come",
         category: "necklaces",
-        price: null, // Coming soon
+        price: null,
         description: null,
         image: null
     },
     {
         id: 4,
-        name: "Classic Craft Bangles",
+        name: "Product yet to come",
         category: "bangles",
-        price: null, // Coming soon
+        price: null,
         description: null,
         image: null
     },
     {
         id: 5,
-        name: "Sparkling Crystal Earrings",
+        name: "Product yet to come",
         category: "earrings",
-        price: null, // Coming soon
+        price: null,
         description: null,
         image: null
     }
@@ -156,12 +156,12 @@ function renderProducts() {
     }
 
     productGrid.innerHTML = filteredProducts.map(product => {
-        // COMING SOON CARD
+        // COMING SOON / PLACEHOLDER CARD
         if (product.price === null || product.price === undefined) {
             return `
                 <div class="product-card placeholder-card">
                     <div class="placeholder-img">✨ Coming Soon</div>
-                    <h3>${product.name}</h3>
+                    <h3>${product.name || "Product yet to come"}</h3>
                     <p>Stay tuned for our next launch!</p>
                     <div class="price-row">
                         <span class="price" style="color: var(--text-muted); font-size: 0.95rem;">TBA</span>
@@ -171,7 +171,7 @@ function renderProducts() {
             `;
         }
 
-        // ACTIVE PRODUCT CARD (WITH HOVER ZOOM WRAPPER)
+        // ACTIVE PRODUCT CARD
         return `
             <div class="product-card">
                 <div class="img-wrapper">
@@ -187,7 +187,6 @@ function renderProducts() {
         `;
     }).join('');
 }
-
 // ==========================================
 // --- 5. MODAL & EVENT CONTROLS ---
 // ==========================================
