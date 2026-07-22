@@ -2,17 +2,17 @@
 const products = [
     {
         id: 1,
-        name: "Silk Satin Scrunchie",
-        price: 199,
+        name: "Large-sized Satin Scrunchie",
+        price: 59,
         description: "Ultra-soft premium silk scrunchie designed to prevent hair breakage.",
-        image: "https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&w=600&q=80"
+        image: "./images/Scrunchie1.png"
     },
     {
         id: 2,
         name: "Beaded Heart Bracelet",
         price: 349,
         description: "Handcrafted delicate glass bead bracelet with a gold-plated heart charm.",
-        image: "https://images.unsplash.com/photo-1611591475179-625d1c22a76f?auto=format&fit=crop&w=600&q=80"
+        image: "./images/bracelet1.png"
     },
     {
         id: 3,
