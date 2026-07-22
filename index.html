@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUNCHYYYZ | Handcrafted Accessories</title>
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
@@ -88,12 +88,12 @@
                 <div class="form-group">
                     <label for="order-type">Fulfillment Method *</label>
                     <select id="order-type">
-                        <option value="Delivery">Home Delivery (+ ₹50 Delivery Fee)</option>
+                        <option value="Delivery">Home Delivery (Fee based on distance)</option>
                         <option value="Pickup">Self Pickup (Free)</option>
                     </select>
                 </div>
 
-                <!-- Amazon-Style Detailed Address Section -->
+                <!-- Detailed Address Section -->
                 <div id="address-section">
                     <h3 style="font-size: 0.95rem; margin: 1rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Delivery Address</h3>
                     
@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- Order Summary Breakdown -->
+                <!-- Price Breakdown Box -->
                 <div class="price-breakdown">
                     <div class="summary-row">
                         <span>Items Subtotal:</span>
@@ -137,12 +137,12 @@
                     </div>
                     <div class="summary-row" id="delivery-charge-row">
                         <span>Delivery Fee:</span>
-                        <span id="summary-delivery-charge" style="color: #2e7d32; font-weight: 600;">+ ₹50</span>
+                        <span id="summary-delivery-charge" style="color: #d97706; font-weight: 600;">TBD (Based on distance)</span>
                     </div>
                     <div class="summary-divider"></div>
                     <div class="summary-row total">
-                        <span>Final Total:</span>
-                        <span id="summary-grand-total">₹0</span>
+                        <span>Grand Total:</span>
+                        <span id="summary-grand-total">₹0 + Delivery</span>
                     </div>
                 </div>
 
@@ -159,6 +159,6 @@
     </a>
 
     <!-- Main JavaScript File -->
-    <script src="app.js?v=3.0"></script>
+    <script src="app.js?v=4.0"></script>
 </body>
 </html>

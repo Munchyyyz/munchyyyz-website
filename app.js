@@ -1,8 +1,7 @@
 // ==========================================
 // --- 1. CONFIGURATION & STATE ---
 // ==========================================
-const whatsappNumber = "14024153307"; // Replace with your WhatsApp Number (with country code, no +)
-const DELIVERY_FEE = 50; // Delivery charge in INR
+const whatsappNumber = "14024153307"; // ⚠️ Replace with your 10-digit WhatsApp Number (with country code 91)
 
 let cart = JSON.parse(localStorage.getItem("munchyyyz_cart")) || [];
 let currentCategory = "all";
@@ -212,18 +211,26 @@ function updateModalTotals() {
     const orderType = orderTypeSelect ? orderTypeSelect.value : "Delivery";
     
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = (orderType === "Delivery") ? DELIVERY_FEE : 0;
-    const grandTotal = subtotal + deliveryFee;
 
     const subtotalElem = document.getElementById("summary-subtotal");
     const deliveryChargeElem = document.getElementById("summary-delivery-charge");
     const grandTotalElem = document.getElementById("summary-grand-total");
 
     if (subtotalElem) subtotalElem.textContent = `₹${subtotal}`;
+    
     if (deliveryChargeElem) {
-        deliveryChargeElem.textContent = deliveryFee > 0 ? `+ ₹${deliveryFee}` : "FREE";
+        if (orderType === "Delivery") {
+            deliveryChargeElem.textContent = "TBD (Based on distance)";
+            deliveryChargeElem.style.color = "#d97706";
+        } else {
+            deliveryChargeElem.textContent = "FREE";
+            deliveryChargeElem.style.color = "#2e7d32";
+        }
     }
-    if (grandTotalElem) grandTotalElem.textContent = `₹${grandTotal}`;
+    
+    if (grandTotalElem) {
+        grandTotalElem.textContent = (orderType === "Delivery") ? `₹${subtotal} + Delivery` : `₹${subtotal}`;
+    }
 }
 
 function openCheckout() {
@@ -299,8 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const orderType = document.getElementById("order-type").value;
 
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const deliveryFee = (orderType === "Delivery") ? DELIVERY_FEE : 0;
-            const grandTotal = subtotal + deliveryFee;
 
             let message = `🛍️ *NEW ORDER - MUNCHYYYZ*\n`;
             message += `----------------------------\n`;
@@ -338,10 +343,14 @@ document.addEventListener("DOMContentLoaded", () => {
             message += `----------------------------\n`;
             message += `💵 *Subtotal:* ₹${subtotal}\n`;
             if (orderType === "Delivery") {
-                message += `🚚 *Delivery Fee:* ₹${deliveryFee}\n`;
+                message += `🚚 *Delivery Fee:* To be calculated based on address distance\n`;
+                message += `💰 *Subtotal to pay:* ₹${subtotal} + Delivery Charge\n\n`;
+                message += `Hi! Please calculate the delivery fee for my address and confirm my order.`;
+            } else {
+                message += `🚚 *Delivery Fee:* FREE (Self Pickup)\n`;
+                message += `💰 *FINAL AMOUNT:* ₹${subtotal}\n\n`;
+                message += `Hi! Please confirm my pickup order.`;
             }
-            message += `💰 *FINAL AMOUNT:* ₹${grandTotal}\n\n`;
-            message += `Hi! Please confirm my order.`;
 
             const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
             window.open(waUrl, "_blank");
