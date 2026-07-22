@@ -258,23 +258,19 @@ function setupEventListeners() {
         });
     }
 
- // Floating Corner WhatsApp Support Button
-const floatingWaBtn = document.getElementById("floating-wa-btn");
+    // Floating Corner WhatsApp Support Button
+    if (floatingWaBtn) {
+        floatingWaBtn.addEventListener("click", (e) => {
+            e.preventDefault();
 
-if (floatingWaBtn) {
-    floatingWaBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        // Exact message sent from the customer to you
-        const supportMsg = "Hello, I am reaching out to you regarding Munchyyyz items!";
-        
-        // Encode message for URL
-        const encodedSupportMsg = encodeURIComponent(supportMsg);
-        
-        // Make sure whatsappNumber is set to your phone number with country code (e.g., "919876543210")
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedSupportMsg}`, "_blank");
-    });
+            const supportMsg = "Hello, I am reaching out to you regarding Munchyyyz items!";
+            const encodedSupportMsg = encodeURIComponent(supportMsg);
+            
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodedSupportMsg}`, "_blank");
+        });
+    }
 }
+
 // ==========================================
 // --- 7. INITIALIZATION ---
 // ==========================================
