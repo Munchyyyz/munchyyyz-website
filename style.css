@@ -1,25 +1,20 @@
-/* --- Google Fonts Import --- */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap');
-
-/* --- Root Variables: Creamy, Warm & Gold Palette --- */
+/* --- GLOBAL VARIABLES & RESET --- */
 :root {
-    --bg-main: #FAF7F2;          /* Soft Cream */
-    --bg-card: #FFFFFF;          /* Pure White */
-    --accent-gold: #C5A059;      /* Elegant Soft Gold */
+    --bg-main: #FAF7F2;
+    --bg-card: #FFFFFF;
+    --accent-gold: #C5A059;
     --accent-gold-hover: #AE8943;
-    --text-dark: #2C2A29;        /* Deep Charcoal / Warm Black */
-    --text-muted: #7A7571;       /* Subtle Warm Gray */
-    --border-color: #EFE8DE;     /* Light Creamy Border */
+    --text-dark: #2C2A29;
+    --text-muted: #7A7571;
+    --border-color: #EFE8DE;
     --shadow-soft: 0 10px 30px rgba(44, 42, 41, 0.05);
-    --shadow-hover: 0 15px 35px rgba(197, 160, 89, 0.15);
 }
 
-/* --- Global Reset & Typography --- */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Playfair Display', 'Didot', 'Georgia', serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -29,177 +24,190 @@ body {
     overflow-x: hidden;
 }
 
-/* --- Navigation Bar --- */
+/* --- NAVBAR --- */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 8%;
-    background: rgba(250, 247, 242, 0.92);
-    backdrop-filter: blur(10px);
+    padding: 1.2rem 5%;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid var(--border-color);
 }
 
 .logo {
-    font-size: 2.1rem;
+    font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: 3px;
-    color: var(--text-dark);
-    text-transform: uppercase;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-}
-
-nav a {
-    color: var(--text-dark);
+.navbar nav a {
     text-decoration: none;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.95rem;
+    color: var(--text-dark);
+    margin-right: 1.5rem;
     font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: color 0.3s ease;
-}
-
-nav a:hover {
-    color: var(--accent-gold);
 }
 
 .cart-btn {
-    background-color: var(--text-dark);
-    color: var(--bg-main);
+    background: var(--text-dark);
+    color: white;
     border: none;
-    padding: 0.7rem 1.6rem;
-    border-radius: 50px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-weight: 600;
+    transition: background 0.3s ease;
 }
 
 .cart-btn:hover {
-    background-color: var(--accent-gold);
-    color: #FFFFFF;
-    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+    background: var(--accent-gold);
 }
 
-/* --- Hero Banner --- */
+/* --- CART COUNTER ANIMATION --- */
+@keyframes cartPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+#cart-count {
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+#cart-count.cart-pop-animation {
+    animation: cartPop 0.3s ease-in-out;
+}
+
+/* --- HERO --- */
 .hero {
-    height: 65vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     text-align: center;
-    background: linear-gradient(180deg, rgba(250,247,242,0) 0%, rgba(239,232,222,0.5) 100%);
-    padding: 0 2rem;
+    padding: 5rem 1rem;
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--bg-main) 100%);
 }
 
-.hero-content h1 {
-    font-size: 3.8rem;
-    font-weight: 400;
+.hero h1 {
+    font-size: 2.8rem;
     margin-bottom: 1rem;
-    letter-spacing: 1px;
-    color: var(--text-dark);
 }
 
-.hero-content p {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 1.1rem;
+.hero p {
     color: var(--text-muted);
-    max-width: 550px;
-    margin: 0 auto 2.5rem auto;
-    letter-spacing: 0.5px;
+    max-width: 600px;
+    margin: 0 auto 2rem;
 }
 
 .cta-btn {
     display: inline-block;
-    background-color: var(--accent-gold);
-    color: #FFFFFF;
-    padding: 1rem 2.8rem;
-    border-radius: 50px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    background: var(--accent-gold);
+    color: white;
+    padding: 0.8rem 2rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.25);
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background 0.3s ease;
 }
 
 .cta-btn:hover {
-    background-color: var(--accent-gold-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(197, 160, 89, 0.35);
+    background: var(--accent-gold-hover);
 }
 
-/* --- Store & Product Grid --- */
+/* --- STORE & CATEGORY FILTERS --- */
 .store-container {
-    padding: 5rem 8%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
 }
 
 .store-container h2 {
-    font-size: 2.4rem;
-    font-weight: 400;
-    margin-bottom: 3rem;
     text-align: center;
-    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
 }
 
+.category-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2.5rem;
+}
+
+.filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: var(--accent-gold);
+    color: white;
+    border-color: var(--accent-gold);
+}
+
+/* --- PRODUCT GRID & HOVER ZOOM --- */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
 }
 
 .product-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 1.2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: var(--shadow-soft);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden; /* Ensures image zoom stays inside card border */
 }
 
 .product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--accent-gold);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(44, 42, 41, 0.1);
 }
 
-.product-img {
+/* IMAGE HOVER ZOOM EFFECT */
+.product-card .img-wrapper {
     width: 100%;
-    height: 260px;
-    object-fit: cover;
+    height: 220px;
     border-radius: 8px;
-    margin-bottom: 1.2rem;
-    background-color: #F5F0EB;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.product-card img.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover img.product-img {
+    transform: scale(1.08); /* Zoom effect */
 }
 
 .product-card h3 {
-    font-size: 1.4rem;
-    font-weight: 500;
+    font-size: 1.1rem;
     margin-bottom: 0.4rem;
 }
 
 .product-card p {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.88rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
 }
 
 .price-row {
@@ -207,191 +215,116 @@ nav a:hover {
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
 }
 
 .price {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 1.2rem;
     font-weight: 700;
-    color: var(--text-dark);
+    font-size: 1.1rem;
 }
 
 .add-btn {
-    background: transparent;
-    border: 1.5px solid var(--text-dark);
-    color: var(--text-dark);
-    padding: 0.6rem 1.4rem;
-    border-radius: 50px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    background: var(--text-dark);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-weight: 600;
+    transition: background 0.2s ease;
 }
 
 .add-btn:hover {
-    background: var(--text-dark);
-    color: #FFFFFF;
+    background: var(--accent-gold);
 }
 
-/* --- Coming Soon Placeholder Cards --- */
+/* PLACEHOLDER / COMING SOON CARD */
 .placeholder-card {
-    opacity: 0.9;
+    background: #FAF7F2;
+    border: 2px dashed var(--border-color);
 }
 
 .placeholder-img {
-    width: 100%;
-    height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #EFE8DE;
     color: var(--text-muted);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 1px;
-    border: 2px dashed var(--border-color);
+    height: 220px;
     border-radius: 8px;
-    margin-bottom: 1.2rem;
-    background-color: #F8F5F0;
+    margin-bottom: 1rem;
 }
 
-/* --- Shopping Cart Sidebar Drawer --- */
+/* --- MODALS & CART DRAWER --- */
 .cart-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(44, 42, 41, 0.4);
-    backdrop-filter: blur(4px);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
     display: none;
     z-index: 200;
 }
 
+.cart-overlay.open { display: block; }
+
 .cart-modal {
     position: fixed;
-    top: 0;
-    right: -420px;
-    width: 400px;
-    max-width: 100%;
-    height: 100%;
+    top: 0; right: -400px;
+    width: 100%; max-width: 380px; height: 100%;
     background: var(--bg-card);
-    z-index: 300;
-    padding: 2.5rem;
+    z-index: 201;
     display: flex;
     flex-direction: column;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
-    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.1);
 }
 
 .cart-modal.open { right: 0; }
-.cart-overlay.open { display: block; }
 
 .cart-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.2rem;
 }
 
-.cart-header h3 {
-    font-size: 1.6rem;
-    font-weight: 400;
-}
-
-.close-cart {
+.close-cart, .close-btn {
     background: none;
     border: none;
-    color: var(--text-dark);
     font-size: 1.8rem;
     cursor: pointer;
-    line-height: 1;
 }
 
 .cart-items {
     flex: 1;
+    padding: 1.5rem;
     overflow-y: auto;
-    padding: 1.5rem 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* --- Cart Item Styling & Quantity Controls --- */
 .cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.cart-item-info strong {
-    display: block;
-    font-size: 0.95rem;
-    color: var(--text-dark);
-}
-
-.cart-item-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .qty-btn {
-    background: var(--bg-main);
+    width: 24px; height: 24px;
     border: 1px solid var(--border-color);
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-dark);
+    background: white;
+    border-radius: 4px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    line-height: 1;
 }
 
-.qty-btn:hover {
-    background: var(--accent-gold);
-    color: #FFFFFF;
-    border-color: var(--accent-gold);
-}
-
-.qty-count {
-    font-size: 0.9rem;
-    font-weight: 600;
-    min-width: 18px;
-    text-align: center;
-    color: var(--text-dark);
-}
-
-.remove-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.3rem;
-    cursor: pointer;
-    margin-left: 0.4rem;
-    line-height: 1;
-    transition: color 0.2s ease;
-}
-
-.remove-btn:hover {
-    color: #e74c3c;
-}
+.qty-count { margin: 0 8px; font-weight: 600; }
+.remove-btn { background: none; border: none; color: #d9534f; cursor: pointer; margin-left: 10px; font-size: 1.1rem; }
 
 .cart-footer {
+    padding: 1.5rem;
     border-top: 1px solid var(--border-color);
-    padding-top: 1.5rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .total-row {
@@ -399,210 +332,62 @@ nav a:hover {
     justify-content: space-between;
     font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
-.checkout-btn {
+.checkout-btn, .wa-btn {
     width: 100%;
-    background: var(--accent-gold);
-    color: #FFFFFF;
+    padding: 0.8rem;
+    background: #25D366;
+    color: white;
     border: none;
-    padding: 1.1rem;
-    border-radius: 50px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.checkout-btn:hover {
-    background: var(--accent-gold-hover);
-    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
-}
-
-/* --- WHATSAPP DELIVERY DETAILS POPUP MODAL --- */
+/* CHECKOUT FORM MODAL */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(44, 42, 41, 0.6);
-    backdrop-filter: blur(5px);
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
 }
 
 .modal-content {
-    background-color: var(--bg-card);
+    background: white;
+    max-width: 450px;
     margin: 10% auto;
-    padding: 2.5rem;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 440px;
+    padding: 2rem;
+    border-radius: 12px;
     position: relative;
-    text-align: left;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--border-color);
 }
 
-.modal-content h2 {
-    font-size: 1.8rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-}
-
-.modal-content p {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.close-btn {
-    position: absolute;
-    right: 20px;
-    top: 18px;
-    font-size: 1.8rem;
-    cursor: pointer;
-    color: var(--text-dark);
-    line-height: 1;
-}
-
-.form-group {
-    margin-bottom: 1.2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--text-dark);
-}
-
-.form-group input, 
-.form-group textarea {
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; }
+.form-group input, .form-group textarea {
     width: 100%;
-    padding: 0.8rem 1rem;
+    padding: 0.6rem;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.95rem;
-    background-color: var(--bg-main);
-    color: var(--text-dark);
-    outline: none;
-    transition: border-color 0.3s ease;
+    border-radius: 6px;
 }
 
-.form-group input:focus, 
-.form-group textarea:focus {
-    border-color: var(--accent-gold);
-}
-
-.wa-btn {
-    width: 100%;
-    background-color: #25D366;
-    color: white;
-    border: none;
-    padding: 1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-radius: 50px;
-    cursor: pointer;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-    margin-top: 0.5rem;
-}
-
-.wa-btn:hover {
-    background-color: #1eb857;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-}
-
-/* --- Floating Corner WhatsApp Button --- */
+/* FLOATING WHATSAPP BUTTON */
 .floating-wa-btn {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 60px;
-    height: 60px;
-    background-color: #25D366;
-    color: #FFFFFF;
+    bottom: 20px; right: 20px;
+    background: #25D366;
+    color: white;
+    width: 50px; height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-    z-index: 999;
-    transition: all 0.3s ease;
-    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 150;
+    transition: transform 0.2s ease;
 }
 
-.floating-wa-btn:hover {
-    background-color: #1eb857;
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
-}
-
-.wa-icon {
-    width: 32px;
-    height: 32px;
-}
-
-/* --- Mobile Responsiveness --- */
-@media (max-width: 768px) {
-    .navbar {
-        padding: 1rem 5%;
-    }
-
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
-
-    .store-container {
-        padding: 3rem 5%;
-    }
-
-    .modal-content {
-        margin: 20% auto;
-        padding: 1.8rem;
-    }
-
-    .floating-wa-btn {
-        bottom: 20px;
-        right: 20px;
-        width: 52px;
-        height: 52px;
-    }
-
-    .wa-icon {
-        width: 28px;
-        height: 28px;
-    }
-/* --- CART COUNTER POP ANIMATION --- */
-@keyframes cartPop {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.4);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.cart-pop-animation {
-    animation: cartPop 0.3s ease-in-out;
-}
+.floating-wa-btn:hover { transform: scale(1.1); }
+.wa-icon { width: 26px; height: 26px; }

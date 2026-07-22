@@ -1,18 +1,44 @@
 // ==========================================
-// --- 1. PRODUCT DATA ---
+// --- 1. PRODUCT DATA WITH CATEGORIES ---
 // ==========================================
 const products = [
     {
         id: 1,
         name: "Large-sized Satin Scrunchie",
+        category: "scrunchies",
         price: 59,
         description: "Ultra-soft premium silk scrunchie designed to prevent hair breakage.",
         image: "./images/Scrunchie1.png"
     },
     {
         id: 2,
-        name: "Product yet to come",
-        price: null,
+        name: "Elegant Pearl Bracelet",
+        category: "bracelets",
+        price: null, // Coming soon
+        description: null,
+        image: null
+    },
+    {
+        id: 3,
+        name: "Minimalist Gold Necklace",
+        category: "necklaces",
+        price: null, // Coming soon
+        description: null,
+        image: null
+    },
+    {
+        id: 4,
+        name: "Classic Craft Bangles",
+        category: "bangles",
+        price: null, // Coming soon
+        description: null,
+        image: null
+    },
+    {
+        id: 5,
+        name: "Sparkling Crystal Earrings",
+        category: "earrings",
+        price: null, // Coming soon
         description: null,
         image: null
     }
@@ -22,11 +48,12 @@ const products = [
 // --- 2. STATE & GLOBALS ---
 // ==========================================
 let cart = [];
+let currentCategory = "all";
 const whatsappNumber = "14024153307"; 
 
 // DOM Elements
 let productGrid, cartToggle, closeCartBtn, cartOverlay, cartModal, cartItemsContainer, cartCountEl, cartTotalEl;
-let checkoutBtn, checkoutModal, closeCheckoutBtn, waForm, floatingWaBtn;
+let checkoutBtn, checkoutModal, closeCheckoutBtn, waForm, floatingWaBtn, filterButtons;
 
 // ==========================================
 // --- 3. CORE CART FUNCTIONS ---
@@ -73,9 +100,9 @@ function updateCartUI() {
     if (cartCountEl) {
         cartCountEl.innerText = totalCount;
         
-        // Pop animation
+        // Trigger Pop Animation
         cartCountEl.classList.remove("cart-pop-animation");
-        void cartCountEl.offsetWidth; 
+        void cartCountEl.offsetWidth; // Force reflow
         cartCountEl.classList.add("cart-pop-animation");
     }
 
@@ -108,24 +135,33 @@ function updateCartUI() {
     }
 }
 
-// EXPOSE TO GLOBAL WINDOW IMMEDIATELY FOR ONCLICK HANDLERS
+// EXPOSE TO WINDOW IMMEDIATELY
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeItem = removeItem;
 
 // ==========================================
-// --- 4. RENDER PRODUCTS ---
+// --- 4. RENDER PRODUCTS WITH FILTER ---
 // ==========================================
 function renderProducts() {
     if (!productGrid) return;
 
-    productGrid.innerHTML = products.map(product => {
+    const filteredProducts = currentCategory === "all" 
+        ? products 
+        : products.filter(p => p.category === currentCategory);
+
+    if (filteredProducts.length === 0) {
+        productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No products found in this category yet!</p>`;
+        return;
+    }
+
+    productGrid.innerHTML = filteredProducts.map(product => {
         // COMING SOON CARD
         if (product.price === null || product.price === undefined) {
             return `
                 <div class="product-card placeholder-card">
-                    <div class="product-img placeholder-img">✨ Coming Soon</div>
-                    <h3>${product.name && product.name !== "null" ? product.name : "Product Coming Soon"}</h3>
+                    <div class="placeholder-img">✨ Coming Soon</div>
+                    <h3>${product.name}</h3>
                     <p>Stay tuned for our next launch!</p>
                     <div class="price-row">
                         <span class="price" style="color: var(--text-muted); font-size: 0.95rem;">TBA</span>
@@ -135,10 +171,12 @@ function renderProducts() {
             `;
         }
 
-        // ACTIVE PRODUCT CARD
+        // ACTIVE PRODUCT CARD (WITH HOVER ZOOM WRAPPER)
         return `
             <div class="product-card">
-                <img src="${product.image}" alt="${product.name}" class="product-img">
+                <div class="img-wrapper">
+                    <img src="${product.image}" alt="${product.name}" class="product-img">
+                </div>
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
                 <div class="price-row">
@@ -182,15 +220,29 @@ function initDOMElements() {
     closeCheckoutBtn = document.getElementById("close-checkout");
     waForm = document.getElementById("whatsapp-checkout-form");
     floatingWaBtn = document.getElementById("floating-wa-btn");
+    filterButtons = document.querySelectorAll(".filter-btn");
 }
 
 function setupEventListeners() {
-    // Cart drawer toggle
+    // Category Filter Buttons
+    if (filterButtons) {
+        filterButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                filterButtons.forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                
+                currentCategory = e.target.getAttribute("data-category");
+                renderProducts();
+            });
+        });
+    }
+
+    // Cart drawer controls
     if (cartToggle) cartToggle.addEventListener("click", openCart);
     if (closeCartBtn) closeCartBtn.addEventListener("click", closeCart);
     if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
 
-    // Cart Quantity Controls (Event Delegation)
+    // Cart Quantity Controls
     if (cartItemsContainer) {
         cartItemsContainer.addEventListener("click", (e) => {
             const target = e.target;
@@ -229,7 +281,7 @@ function setupEventListeners() {
         }
     });
 
-    // WhatsApp Form Submit (Order Checkout)
+    // WhatsApp Form Submit
     if (waForm) {
         waForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -255,24 +307,19 @@ function setupEventListeners() {
             message += `💰 *Total Amount:* ₹${total}\n\n`;
             message += `Hi! Please confirm my order.`;
 
-            const encodedMessage = encodeURIComponent(message);
-            const waUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
+            const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
             window.open(waUrl, "_blank");
 
             if (checkoutModal) checkoutModal.style.display = "none";
         });
     }
 
-    // Floating Corner WhatsApp Support Button
+    // Floating Support Button
     if (floatingWaBtn) {
         floatingWaBtn.addEventListener("click", (e) => {
             e.preventDefault();
-
             const supportMsg = "Hello, I am reaching out to you regarding Munchyyyz items!";
-            const encodedSupportMsg = encodeURIComponent(supportMsg);
-            
-            window.open(`https://wa.me/${whatsappNumber}?text=${encodedSupportMsg}`, "_blank");
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(supportMsg)}`, "_blank");
         });
     }
 }
@@ -286,7 +333,6 @@ function init() {
     setupEventListeners();
 }
 
-// Run init on DOM load or immediately if already loaded
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
 } else {

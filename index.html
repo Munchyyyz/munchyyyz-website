@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUNCHYYYZ | Handcrafted Accessories</title>
-    <link rel="stylesheet" href="style.css?v=1.2">
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
@@ -31,8 +31,19 @@
     <!-- Product Showcase -->
     <main class="store-container" id="products">
         <h2>Featured Collection</h2>
+
+        <!-- Category Filter Tags -->
+        <div class="category-filters" id="category-filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="scrunchies">Scrunchies</button>
+            <button class="filter-btn" data-category="bracelets">Bracelets</button>
+            <button class="filter-btn" data-category="necklaces">Necklaces</button>
+            <button class="filter-btn" data-category="bangles">Bangles</button>
+            <button class="filter-btn" data-category="earrings">Earrings</button>
+        </div>
+
         <div class="product-grid" id="product-grid">
-            <!-- Products will be generated dynamically via app.js -->
+            <!-- Products generated dynamically via app.js -->
         </div>
     </main>
 
@@ -84,6 +95,6 @@
     </a>
 
     <!-- Main JavaScript File -->
-    <script src="app.js?v=1.2"></script>
+    <script src="app.js?v=2.0"></script>
 </body>
 </html>
