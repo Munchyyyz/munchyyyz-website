@@ -24,83 +24,59 @@ const products = [
 let cart = [];
 const whatsappNumber = "14024153307"; 
 
-// ==========================================
-// --- 3. DOM ELEMENTS ---
-// ==========================================
+// DOM Elements
 let productGrid, cartToggle, closeCartBtn, cartOverlay, cartModal, cartItemsContainer, cartCountEl, cartTotalEl;
 let checkoutBtn, checkoutModal, closeCheckoutBtn, waForm, floatingWaBtn;
 
-function initDOMElements() {
-    productGrid = document.getElementById("product-grid");
-    cartToggle = document.getElementById("cart-toggle");
-    closeCartBtn = document.getElementById("close-cart");
-    cartOverlay = document.getElementById("cart-overlay");
-    cartModal = document.getElementById("cart-modal");
-    cartItemsContainer = document.getElementById("cart-items");
-    cartCountEl = document.getElementById("cart-count");
-    cartTotalEl = document.getElementById("cart-total");
+// ==========================================
+// --- 3. CORE CART FUNCTIONS ---
+// ==========================================
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product || product.price === null) return;
 
-    checkoutBtn = document.getElementById("checkout-btn");
-    checkoutModal = document.getElementById("checkout-modal");
-    closeCheckoutBtn = document.getElementById("close-checkout");
-    waForm = document.getElementById("whatsapp-checkout-form");
-    floatingWaBtn = document.getElementById("floating-wa-btn");
+    const existingItem = cart.find(item => item.id === productId);
+
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+
+    updateCartUI();
+    openCart();
 }
 
-// ==========================================
-// --- 4. RENDER PRODUCTS TO PAGE ---
-// ==========================================
-function renderProducts() {
-    if (!productGrid) return;
+function changeQuantity(productId, delta) {
+    const itemIndex = cart.findIndex(item => item.id === productId);
 
-    productGrid.innerHTML = products.map(product => {
-        // IF PRICE IS NULL -> SHOW COMING SOON CARD
-        if (product.price === null || product.price === undefined) {
-            return `
-                <div class="product-card placeholder-card">
-                    <div class="product-img placeholder-img">✨ Coming Soon</div>
-                    <h3>${product.name && product.name !== "null" ? product.name : "Product Coming Soon"}</h3>
-                    <p>Stay tuned for our next launch!</p>
-                    <div class="price-row">
-                        <span class="price" style="color: var(--text-muted); font-size: 0.95rem;">TBA</span>
-                        <button class="add-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>
-                    </div>
-                </div>
-            `;
+    if (itemIndex > -1) {
+        cart[itemIndex].quantity += delta;
+
+        if (cart[itemIndex].quantity <= 0) {
+            cart.splice(itemIndex, 1);
         }
+    }
 
-        // IF PRICE EXISTS -> SHOW ACTIVE PRODUCT CARD
-        return `
-            <div class="product-card">
-                <img src="${product.image}" alt="${product.name}" class="product-img">
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <div class="price-row">
-                    <span class="price">₹${product.price}</span>
-                    <button class="add-btn" onclick="addToCart(${product.id})">Add to Cart</button>
-                </div>
-            </div>
-        `;
-    }).join('');
+    updateCartUI();
 }
 
-// ==========================================
-// --- 5. CART ACTIONS & UI UPDATES ---
-// ==========================================
+function removeItem(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCartUI();
+}
+
 function updateCartUI() {
     // Total Items Count
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     
     if (cartCountEl) {
-        // Only trigger animation if items are added/changed
-        if (cartCountEl.innerText !== String(totalCount)) {
-            cartCountEl.innerText = totalCount;
-            
-            // Trigger Pop Animation
-            cartCountEl.classList.remove("cart-pop-animation");
-            void cartCountEl.offsetWidth; // Force DOM reflow to restart animation
-            cartCountEl.classList.add("cart-pop-animation");
-        }
+        cartCountEl.innerText = totalCount;
+        
+        // Pop animation
+        cartCountEl.classList.remove("cart-pop-animation");
+        void cartCountEl.offsetWidth; 
+        cartCountEl.classList.add("cart-pop-animation");
     }
 
     // Total Cost
@@ -132,8 +108,50 @@ function updateCartUI() {
     }
 }
 
+// EXPOSE TO GLOBAL WINDOW IMMEDIATELY FOR ONCLICK HANDLERS
+window.addToCart = addToCart;
+window.changeQuantity = changeQuantity;
+window.removeItem = removeItem;
+
 // ==========================================
-// --- 6. MODAL & EVENT CONTROLS ---
+// --- 4. RENDER PRODUCTS ---
+// ==========================================
+function renderProducts() {
+    if (!productGrid) return;
+
+    productGrid.innerHTML = products.map(product => {
+        // COMING SOON CARD
+        if (product.price === null || product.price === undefined) {
+            return `
+                <div class="product-card placeholder-card">
+                    <div class="product-img placeholder-img">✨ Coming Soon</div>
+                    <h3>${product.name && product.name !== "null" ? product.name : "Product Coming Soon"}</h3>
+                    <p>Stay tuned for our next launch!</p>
+                    <div class="price-row">
+                        <span class="price" style="color: var(--text-muted); font-size: 0.95rem;">TBA</span>
+                        <button class="add-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ACTIVE PRODUCT CARD
+        return `
+            <div class="product-card">
+                <img src="${product.image}" alt="${product.name}" class="product-img">
+                <h3>${product.name}</h3>
+                <p>${product.description}</p>
+                <div class="price-row">
+                    <span class="price">₹${product.price}</span>
+                    <button class="add-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ==========================================
+// --- 5. MODAL & EVENT CONTROLS ---
 // ==========================================
 function openCart() {
     if (cartModal && cartOverlay) {
@@ -149,8 +167,25 @@ function closeCart() {
     }
 }
 
+function initDOMElements() {
+    productGrid = document.getElementById("product-grid");
+    cartToggle = document.getElementById("cart-toggle");
+    closeCartBtn = document.getElementById("close-cart");
+    cartOverlay = document.getElementById("cart-overlay");
+    cartModal = document.getElementById("cart-modal");
+    cartItemsContainer = document.getElementById("cart-items");
+    cartCountEl = document.getElementById("cart-count");
+    cartTotalEl = document.getElementById("cart-total");
+
+    checkoutBtn = document.getElementById("checkout-btn");
+    checkoutModal = document.getElementById("checkout-modal");
+    closeCheckoutBtn = document.getElementById("close-checkout");
+    waForm = document.getElementById("whatsapp-checkout-form");
+    floatingWaBtn = document.getElementById("floating-wa-btn");
+}
+
 function setupEventListeners() {
-    // Cart drawer buttons
+    // Cart drawer toggle
     if (cartToggle) cartToggle.addEventListener("click", openCart);
     if (closeCartBtn) closeCartBtn.addEventListener("click", closeCart);
     if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
@@ -243,7 +278,7 @@ function setupEventListeners() {
 }
 
 // ==========================================
-// --- 7. INITIALIZATION ---
+// --- 6. INITIALIZATION ---
 // ==========================================
 function init() {
     initDOMElements();
@@ -251,7 +286,7 @@ function init() {
     setupEventListeners();
 }
 
-// Execute once DOM content is ready
+// Run init on DOM load or immediately if already loaded
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
 } else {
