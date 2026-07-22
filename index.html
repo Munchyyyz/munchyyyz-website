@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUNCHYYYZ | Gourmet Treats & Snacks</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="logo">MUNCHYYYZ</div>
+        <nav>
+            <a href="#products">Menu</a>
+            <button class="cart-btn" id="cart-toggle">
+                🛒 Cart (<span id="cart-count">0</span>)
+            </button>
+        </nav>
+    </header>
+
+  <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Satisfy Your Craving.</h1>
+            <p>Handcrafted gourmet fashion accessories, heartfully made and delivered</p>
+            <a href="#products" class="cta-btn">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <main class="store-container" id="products">
+        <h2>Featured Munchies</h2>
+        <div class="product-grid" id="product-grid">
+            <!-- Products will be generated dynamically here! -->
+        </div>
+    </main>
+
+    <!-- Shopping Cart Modal Sidebar -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" id="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-msg">Your cart is currently empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
