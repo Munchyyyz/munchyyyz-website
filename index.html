@@ -19,7 +19,7 @@
         </nav>
     </header>
 
-  <!-- Hero Section -->
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1>Satisfy Your Craving.</h1>
@@ -54,6 +54,24 @@
             <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
         </div>
     </div>
+
+    <!-- Instagram Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-checkout">&times;</span>
+            <h2>Complete Your Order</h2>
+            <p>Copy your order summary below and send it to us on Instagram to place your order!</p>
+            
+            <textarea id="order-summary-text" readonly rows="6"></textarea>
+            
+            <div class="checkout-actions">
+                <button id="copy-order-btn" class="btn">📋 Copy Order Summary</button>
+                <a id="ig-dm-link" href="https://ig.me/m/munchyyyz_ke" target="_blank" class="btn ig-btn">
+                    💬 Open Instagram DM
+                </a>
+            </div>
+        </div>
+    </div>      
 
     <script src="app.js"></script>
 </body>

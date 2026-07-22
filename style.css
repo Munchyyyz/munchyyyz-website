@@ -328,3 +328,64 @@ nav a:hover {
     background: var(--accent-gold-hover);
     box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
 }
+// --- INSTAGRAM CHECKOUT MODAL LOGIC ---
+const checkoutBtn = document.getElementById("checkout-btn");
+const checkoutModal = document.getElementById("checkout-modal");
+const closeCheckoutBtn = document.getElementById("close-checkout");
+const orderSummaryText = document.getElementById("order-summary-text");
+const copyOrderBtn = document.getElementById("copy-order-btn");
+
+// Helper to build the text summary of what's in the cart
+function generateOrderSummary() {
+    if (typeof cart === "undefined" || cart.length === 0) return "";
+
+    let summary = "🛍️ NEW ORDER REQUEST\n-------------------\n";
+    let total = 0;
+
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        summary += `• ${item.name} (x${item.quantity}) - $${itemTotal}\n`;
+    });
+
+    summary += `-------------------\nTotal: $${total}\n\nHi Munchyyyz! I'd like to place this order.`;
+    return summary;
+}
+
+// Open modal when Checkout is clicked
+if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", () => {
+        if (typeof cart !== "undefined" && cart.length === 0) {
+            alert("Your cart is currently empty!");
+            return;
+        }
+        orderSummaryText.value = generateOrderSummary();
+        checkoutModal.style.display = "block";
+    });
+}
+
+// Close modal when 'X' is clicked
+if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener("click", () => {
+        checkoutModal.style.display = "none";
+    });
+}
+
+// Close modal when clicking outside the box
+window.addEventListener("click", (event) => {
+    if (event.target === checkoutModal) {
+        checkoutModal.style.display = "none";
+    }
+});
+
+// Copy Order Details to Clipboard
+if (copyOrderBtn) {
+    copyOrderBtn.addEventListener("click", () => {
+        orderSummaryText.select();
+        navigator.clipboard.writeText(orderSummaryText.value);
+        copyOrderBtn.innerText = "✅ Copied! Now click below to DM us";
+        setTimeout(() => {
+            copyOrderBtn.innerText = "📋 Copy Order Summary";
+        }, 3000);
+    });
+}
